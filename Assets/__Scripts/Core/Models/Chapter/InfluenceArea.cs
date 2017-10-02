@@ -38,9 +38,17 @@ namespace uAdventure.Core
          */
         private int height;
 
+        /**
+         * Is the area rectangular
+         */
+        private bool rectangular;
+
+        private List<Vector2> points;
+
         public InfluenceArea()
         {
-
+            points = new List<Vector2>();
+            exists = true;
         }
 
         /**
@@ -55,14 +63,19 @@ namespace uAdventure.Core
          * @param height
          *            The height of the influence area
          */
-        public InfluenceArea(int x, int y, int width, int height)
+        public InfluenceArea(int x, int y, int width, int height) : this()
         {
-
-            exists = true;
+            rectangular = true;
             this.x = x;
             this.y = y;
             this.width = width;
             this.height = height;
+        }
+
+        
+        public InfluenceArea(List<Vector2d> points) : this()
+        {
+            rectangular = false;
         }
 
         /**
@@ -84,13 +97,27 @@ namespace uAdventure.Core
             this.exists = exists;
         }
 
+
         /**
-         * @return the x
+         * Returns the horizontal coordinate of the upper left corner of the exit
+         * 
+         * @return the horizontal coordinate of the upper left corner of the exit
          */
         public int getX()
         {
 
-            return x;
+            if (rectangular)
+                return x;
+            else
+            {
+                int minX = int.MaxValue;
+                foreach (Vector2 Vector2 in points)
+                {
+                    if (Vector2.x < minX)
+                        minX = (int)Vector2.x;
+                }
+                return minX;
+            }
         }
 
         /**
@@ -104,13 +131,27 @@ namespace uAdventure.Core
                 this.x = x;
         }
 
+
         /**
-         * @return the y
+         * Returns the horizontal coordinate of the bottom right of the exit
+         * 
+         * @return the horizontal coordinate of the bottom right of the exit
          */
         public int getY()
         {
 
-            return y;
+            if (rectangular)
+                return y;
+            else
+            {
+                int minY = int.MaxValue;
+                foreach (Vector2 Vector2 in points)
+                {
+                    if (Vector2.y < minY)
+                        minY = (int)Vector2.y;
+                }
+                return minY;
+            }
         }
 
         /**
@@ -124,13 +165,31 @@ namespace uAdventure.Core
                 this.y = y;
         }
 
+
         /**
-         * @return the width
+         * Returns the width of the exit
+         * 
+         * @return Width of the exit
          */
         public int getWidth()
         {
 
-            return width;
+            if (rectangular)
+                return width;
+            else
+            {
+                int maxX = int.MinValue;
+                int minX = int.MaxValue;
+                foreach (Vector2 Vector2 in points)
+                {
+                    if (Vector2.x > maxX)
+                        maxX = (int)Vector2.x;
+                    if (Vector2.x < minX)
+                        minX = (int)Vector2.x;
+                }
+                return maxX - minX;
+
+            }
         }
 
         /**
@@ -147,10 +206,31 @@ namespace uAdventure.Core
         /**
          * @return the height
          */
+
+        /**
+         * Returns the height of the exit
+         * 
+         * @return Height of the exit
+         */
         public int getHeight()
         {
 
-            return height;
+            if (rectangular)
+                return height;
+            else
+            {
+                int maxY = int.MinValue;
+                int minY = int.MaxValue;
+                foreach (Vector2 Vector2 in points)
+                {
+                    if ((int)Vector2.y > maxY)
+                        maxY = (int)Vector2.y;
+                    if ((int)Vector2.y < minY)
+                        minY = (int)Vector2.y;
+                }
+                return maxY - minY;
+            }
+
         }
 
         /**
@@ -172,35 +252,103 @@ namespace uAdventure.Core
             this.width = width;
             this.height = height;
         }
-        /*
-        @Override
-        public Object clone() throws CloneNotSupportedException
-        {
 
-            InfluenceArea ia = (InfluenceArea) super.clone( );
-            ia.exists = exists;
-            ia.height = height;
-            ia.width = width;
-            ia.x = x;
-            ia.y = y;
-            return ia;
-        }
-        */
         public bool isRectangular()
         {
-
-            return true;
+            return rectangular;
         }
 
         public void setRectangular(bool rectangular)
         {
-
+            this.rectangular = rectangular;
         }
 
         public List<Vector2> getPoints()
         {
+            return points;
+        }
 
-            return null;
+        public void addPoint(Vector2 Vector2)
+        {
+            points.Add(Vector2);
+        }
+        
+        public Vector2 getLastPoint()
+        {
+            if (points.Count > 0)
+                return points[points.Count - 1];
+            return Vector2.zero;
+        }
+
+        public void deletePoint(Vector2 point)
+        {
+            points.Remove(point);
+        }
+
+
+
+        /**
+         * Returns whether a point is inside the exit
+         * 
+         * @param x
+         *            the horizontal positon
+         * @param y
+         *            the vertical position
+         * @return true if the point (x, y) is inside the exit, false otherwise
+         */
+        public bool isPointInside(int x, int y)
+        {
+
+            if (rectangular)
+                return x > getX0() && x < getX1() && y > getY0() && y < getY1();
+            else
+            {
+                return PolygonHelper.ContainsPoint(getPoints(), new Vector2(x, y));
+            }
+        }
+
+        /**
+         * Returns the horizontal coordinate of the upper left corner of the exit
+         * 
+         * @return the horizontal coordinate of the upper left corner of the exit
+         */
+        public int getX0()
+        {
+
+            return getX();
+        }
+
+        /**
+         * Returns the vertical coordinate of the upper left corner of the exit
+         * 
+         * @return the vertical coordinate of the upper left corner of the exit
+         */
+        public int getX1()
+        {
+
+            return getX() + getWidth();
+        }
+
+        /**
+         * Returns the horizontal coordinate of the bottom right of the exit
+         * 
+         * @return the horizontal coordinate of the bottom right of the exit
+         */
+        public int getY0()
+        {
+
+            return getY();
+        }
+
+        /**
+         * Returns the vertical coordinate of the bottom right of the exit
+         * 
+         * @return the vertical coordinate of the bottom right of the exit
+         */
+        public int getY1()
+        {
+
+            return getY() + getHeight();
         }
 
         public object Clone()

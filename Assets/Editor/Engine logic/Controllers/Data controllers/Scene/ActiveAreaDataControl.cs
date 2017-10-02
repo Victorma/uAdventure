@@ -101,51 +101,7 @@ namespace uAdventure.Editor
 
             return activeArea.getDocumentation();
         }
-
-        /**
-         * Returns the X coordinate of the upper left position of the exit.
-         * 
-         * @return X coordinate of the upper left point
-         */
-        public int getX()
-        {
-
-            return activeArea.getX();
-        }
-
-        /**
-         * Returns the Y coordinate of the upper left position of the exit.
-         * 
-         * @return Y coordinate of the upper left point
-         */
-        public int getY()
-        {
-
-            return activeArea.getY();
-        }
-
-        /**
-         * Returns the width of the exit.
-         * 
-         * @return Width of the exit
-         */
-        public int getWidth()
-        {
-
-            return activeArea.getWidth();
-        }
-
-        /**
-         * Returns the height of the exit.
-         * 
-         * @return Height of the exit
-         */
-        public int getHeight()
-        {
-
-            return activeArea.getHeight();
-        }
-
+        
         /**
          * Sets the new values for the exit.
          * 
@@ -160,8 +116,7 @@ namespace uAdventure.Editor
          */
         public void setActiveArea(int x, int y, int width, int height)
         {
-
-            controller.addTool(new ChangeRectangleValueTool(activeArea, x, y, width, height));
+            controller.addTool(new ChangeRectangleValueTool(activeArea.getInfluenceArea(), x, y, width, height));
         }
 
         public override System.Object getContent()
@@ -394,13 +349,13 @@ namespace uAdventure.Editor
         public bool isRectangular()
         {
 
-            return activeArea.isRectangular();
+            return activeArea.getInfluenceArea().isRectangular();
         }
 
         public List<Vector2> getPoints()
         {
 
-            return activeArea.getPoints();
+            return activeArea.getInfluenceArea().getPoints();
         }
 
         public void addPoint(int x, int y)
@@ -411,10 +366,7 @@ namespace uAdventure.Editor
 
         public Vector2 getLastPoint()
         {
-
-            if (activeArea.getPoints().Count > 0)
-                return activeArea.getPoints()[activeArea.getPoints().Count - 1];
-            return Vector2.zero;
+            return activeArea.getInfluenceArea().getLastPoint();
         }
 
         public void deletePoint(Vector2 point)
@@ -432,7 +384,7 @@ namespace uAdventure.Editor
         public Rectangle getRectangle()
         {
 
-            return (Rectangle)this.getContent();
+            return activeArea.getInfluenceArea();
         }
 
         public InfluenceAreaDataControl getInfluenceArea()

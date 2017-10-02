@@ -16,7 +16,7 @@ namespace uAdventure.Core
 			    width 	= ExParsers.ParseDefault(element.GetAttribute("width"), 0),
 			    height	= ExParsers.ParseDefault(element.GetAttribute("height"), 0);
 
-            Barrier barrier = new Barrier(generateId(), x, y, width, height);
+            Barrier barrier = new Barrier(generateId(), false, x, y, width, height);
 
             if (element.SelectSingleNode("documentation") != null)
                 barrier.setDocumentation(element.SelectSingleNode("documentation").InnerText);

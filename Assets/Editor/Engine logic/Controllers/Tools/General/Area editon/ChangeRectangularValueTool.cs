@@ -8,14 +8,14 @@ namespace uAdventure.Editor
     public class ChangeRectangularValueTool : Tool
     {
 
-        private Rectangle rectangle;
+        private HasInfluenceArea holder;
 
         private bool rectangular;
 
-        public ChangeRectangularValueTool(Rectangle rectangle, bool rectangular)
+        public ChangeRectangularValueTool(HasInfluenceArea holder, bool rectangular)
         {
 
-            this.rectangle = rectangle;
+            this.holder = holder;
             this.rectangular = rectangular;
         }
 
@@ -44,9 +44,9 @@ namespace uAdventure.Editor
         public override bool doTool()
         {
 
-            if (rectangle.isRectangular() != rectangular)
+            if (holder.getInfluenceArea().isRectangular() != rectangular)
             {
-                rectangle.setRectangular(rectangular);
+                holder.getInfluenceArea().setRectangular(rectangular);
                 return true;
             }
             return false;
@@ -56,7 +56,7 @@ namespace uAdventure.Editor
         public override bool redoTool()
         {
 
-            rectangle.setRectangular(rectangular);
+            holder.getInfluenceArea().setRectangular(rectangular);
             Controller.Instance.updatePanel();
             return true;
         }
@@ -65,7 +65,7 @@ namespace uAdventure.Editor
         public override bool undoTool()
         {
 
-            rectangle.setRectangular(!rectangular);
+            holder.getInfluenceArea().setRectangular(!rectangular);
             Controller.Instance.updatePanel();
             return true;
         }

@@ -150,7 +150,7 @@ namespace uAdventure.Runner
 
         private void adaptate()
         {
-            if (!this.aad.isRectangular() && this.aad.getInfluenceArea() != null)
+            if (!this.aad.getInfluenceArea().isRectangular())
             {
                 this.transform.localScale = new Vector3(1, 1, 1);
 
@@ -158,11 +158,11 @@ namespace uAdventure.Runner
                 List<Vector3> vertices = new List<Vector3>();
                 Tess tess = new LibTessDotNet.Tess();
 
-                ContourVertex[] contour = new ContourVertex[aad.getPoints().Count];
+                ContourVertex[] contour = new ContourVertex[aad.getInfluenceArea().getPoints().Count];
                 int i = 0;
 
                 float minx = float.MaxValue, miny = float.MaxValue, maxx = 0, maxy = 0;
-                foreach (Vector2 v in this.aad.getPoints())
+                foreach (Vector2 v in this.aad.getInfluenceArea().getPoints())
                 {
                     if (v.x < minx)
                         minx = v.x;
@@ -180,7 +180,7 @@ namespace uAdventure.Runner
                 minx = (minx + (maxx - minx) / 2) / 10;
                 miny = 60 - (miny + (maxy - miny) / 2) / 10;
 
-                foreach (Vector2 v in this.aad.getPoints())
+                foreach (Vector2 v in this.aad.getInfluenceArea().getPoints())
                 {
                     contour[i].Position = new LibTessDotNet.Vec3 { X = v.x / 10f - minx, Y = 60 - v.y / 10f - miny, Z = this.transform.position.z };
                     i++;

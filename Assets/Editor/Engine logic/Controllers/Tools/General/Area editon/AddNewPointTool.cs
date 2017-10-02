@@ -9,7 +9,7 @@ namespace uAdventure.Editor
     {
 
 
-        private Rectangle rectangle;
+        private HasInfluenceArea holder;
 
         private Vector2 newPoint;
 
@@ -19,17 +19,17 @@ namespace uAdventure.Editor
 
         private InfluenceArea newInfluenceArea;
 
-        public AddNewPointTool(Rectangle rectangle, int x, int y)
+        public AddNewPointTool(HasInfluenceArea holder, int x, int y)
         {
 
-            this.rectangle = rectangle;
+            this.holder = holder;
             newPoint = new Vector2(x, y);
         }
 
-        public AddNewPointTool(Rectangle rectangle, int x, int y, InfluenceAreaDataControl iadc)
+        public AddNewPointTool(HasInfluenceArea holder, int x, int y, InfluenceAreaDataControl iadc)
         {
 
-            this.rectangle = rectangle;
+            this.holder = holder;
             this.iadc = iadc;
             oldInfluenceArea = (InfluenceArea)iadc.getContent();
             newPoint = new Vector2(x, y);
@@ -60,11 +60,11 @@ namespace uAdventure.Editor
         public override bool doTool()
         {
 
-            if (rectangle.isRectangular())
+            if (holder.getInfluenceArea().isRectangular())
             {
                 return false;
             }
-            rectangle.getPoints().Add(newPoint);
+            holder.getInfluenceArea().getPoints().Add(newPoint);
 
             if (iadc != null)
             {
@@ -72,7 +72,7 @@ namespace uAdventure.Editor
                 int minY = int.MaxValue;
                 int maxX = 0;
                 int maxY = 0;
-                foreach (Vector2 point in rectangle.getPoints())
+                foreach (Vector2 point in holder.getInfluenceArea().getPoints())
                 {
                     if (point.x > maxX)
                         maxX = (int)point.x;
@@ -88,9 +88,8 @@ namespace uAdventure.Editor
                 newInfluenceArea.setY(-20);
                 newInfluenceArea.setHeight(maxY - minY + 40);
                 newInfluenceArea.setWidth(maxX - minX + 40);
-
-                ActiveArea aa = (ActiveArea)rectangle;
-                aa.setInfluenceArea(newInfluenceArea);
+                
+                holder.setInfluenceArea(newInfluenceArea);
                 iadc.setInfluenceArea(newInfluenceArea);
             }
             return true;
@@ -100,11 +99,10 @@ namespace uAdventure.Editor
         public override bool redoTool()
         {
 
-            rectangle.getPoints().Add(newPoint);
+            holder.getInfluenceArea().getPoints().Add(newPoint);
             if (iadc != null)
             {
-                ActiveArea aa = (ActiveArea)rectangle;
-                aa.setInfluenceArea(newInfluenceArea);
+                holder.setInfluenceArea(newInfluenceArea);
                 iadc.setInfluenceArea(newInfluenceArea);
             }
             Controller.Instance.updatePanel();
@@ -115,11 +113,10 @@ namespace uAdventure.Editor
         public override bool undoTool()
         {
 
-            rectangle.getPoints().Remove(newPoint);
+            holder.getInfluenceArea().getPoints().Remove(newPoint);
             if (iadc != null)
             {
-                ActiveArea aa = (ActiveArea)rectangle;
-                aa.setInfluenceArea(oldInfluenceArea);
+                holder.setInfluenceArea(oldInfluenceArea);
                 iadc.setInfluenceArea(oldInfluenceArea);
             }
             Controller.Instance.updatePanel();

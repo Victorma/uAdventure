@@ -8,7 +8,7 @@ namespace uAdventure.Core
     /**
      * This class holds the data of an exit in eAdventure
      */
-    public class Exit : Documented, Rectangle, Positioned, ICloneable
+    public class Exit : Documented, HasInfluenceArea, Positioned, ICloneable
     {
 
         public const int NO_TRANSITION = 0;
@@ -22,26 +22,7 @@ namespace uAdventure.Core
         public const int RIGHT_TO_LEFT = 4;
 
         public const int FADE_IN = 5;
-
-        /**
-         * X position of the upper left corner of the exit
-         */
-        private int x;
-
-        /**
-         * Y position of the upper left corner of the exit
-         */
-        private int y;
-
-        /**
-         * Width of the exit
-         */
-        private int width;
-
-        /**
-         * Height of the exit
-         */
-        private int height;
+        
 
         /**
          * Documentation of the exit.
@@ -57,11 +38,7 @@ namespace uAdventure.Core
          * Default exit look (it can exists or not)
          */
         private ExitLook defaultExitLook;
-
-        private bool rectangular;
-
-        private List<Vector2> points;
-
+        
         private InfluenceArea influenceArea;
 
         /**
@@ -115,19 +92,12 @@ namespace uAdventure.Core
          *            The height of the exit
          */
         public Exit(bool rectangular, int x, int y, int width, int height)
-        {
-
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-
+        {            
             documentation = null;
-            points = new List<Vector2>();
             nextScenes = new List<NextScene>();
-            this.rectangular = rectangular;
-            influenceArea = new InfluenceArea();
-
+            influenceArea = new InfluenceArea(x, y, width, height);
+            influenceArea.setRectangular(rectangular);
+            
             destinyX = int.MinValue;
             destinyY = int.MinValue;
             conditions = new Conditions();
@@ -341,8 +311,7 @@ namespace uAdventure.Core
          */
         public void setHeight(int height)
         {
-
-            this.height = height;
+            influenceArea.setHeight(height);
         }
 
         /**
@@ -354,122 +323,7 @@ namespace uAdventure.Core
 
             this.nextScenes = nextScenes;
         }
-
-        /**
-         * Returns the horizontal coordinate of the upper left corner of the exit
-         * 
-         * @return the horizontal coordinate of the upper left corner of the exit
-         */
-        public int getX()
-        {
-
-            if (rectangular)
-                return x;
-            else
-            {
-                int minX = int.MaxValue;
-                foreach (Vector2 point in points)
-                {
-                    if (point.x < minX)
-                        minX = (int)point.x;
-                }
-                return minX;
-            }
-        }
-
-        /**
-         * Returns the horizontal coordinate of the bottom right of the exit
-         * 
-         * @return the horizontal coordinate of the bottom right of the exit
-         */
-        public int getY()
-        {
-
-            if (rectangular)
-                return y;
-            else
-            {
-                int minY = int.MaxValue;
-                foreach (Vector2 point in points)
-                {
-                    if (point.y < minY)
-                        minY = (int)point.y;
-                }
-                return minY;
-            }
-        }
-
-        /**
-         * Returns the width of the exit
-         * 
-         * @return Width of the exit
-         */
-        public int getWidth()
-        {
-
-            if (rectangular)
-                return width;
-            else
-            {
-                int maxX = int.MinValue;
-                int minX = int.MaxValue;
-                foreach (Vector2 point in points)
-                {
-                    if (point.x > maxX)
-                        maxX = (int)point.x;
-                    if (point.x < minX)
-                        minX = (int)point.x;
-                }
-                return maxX - minX;
-
-            }
-        }
-
-        /**
-         * Returns the height of the exit
-         * 
-         * @return Height of the exit
-         */
-        public int getHeight()
-        {
-
-            if (rectangular)
-                return height;
-            else
-            {
-                int maxY = int.MinValue;
-                int minY = int.MaxValue;
-                foreach (Vector2 point in points)
-                {
-                    if (point.y > maxY)
-                        maxY = (int)point.y;
-                    if (point.y < minY)
-                        minY = (int)point.y;
-                }
-                return maxY - minY;
-            }
-        }
-
-        /**
-         * Set the values of the exit.
-         * 
-         * @param x
-         *            X coordinate of the upper left point
-         * @param y
-         *            Y coordinate of the upper left point
-         * @param width
-         *            Width of the exit area
-         * @param height
-         *            Height of the exit area
-         */
-        public void setValues(int x, int y, int width, int height)
-        {
-
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-        }
+        
 
         /**
          * Returns the documentation of the exit.
@@ -536,130 +390,6 @@ namespace uAdventure.Core
             this.defaultExitLook = defaultExitLook;
         }
 
-        /**
-         * Returns whether a point is inside the exit
-         * 
-         * @param x
-         *            the horizontal positon
-         * @param y
-         *            the vertical position
-         * @return true if the point (x, y) is inside the exit, false otherwise
-         */
-        public bool isPointInside(int x, int y)
-        {
-
-            if (rectangular)
-                return x > getX0() && x < getX1() && y > getY0() && y < getY1();
-            else
-            {
-                return PolygonHelper.ContainsPoint(getPoints(), new Vector2(x, y));
-            }
-        }
-
-        /**
-         * Returns the horizontal coordinate of the upper left corner of the exit
-         * 
-         * @return the horizontal coordinate of the upper left corner of the exit
-         */
-        public int getX0()
-        {
-
-            return getX();
-        }
-
-        /**
-         * Returns the vertical coordinate of the upper left corner of the exit
-         * 
-         * @return the vertical coordinate of the upper left corner of the exit
-         */
-        public int getX1()
-        {
-
-            return getX() + getWidth();
-        }
-
-        /**
-         * Returns the horizontal coordinate of the bottom right of the exit
-         * 
-         * @return the horizontal coordinate of the bottom right of the exit
-         */
-        public int getY0()
-        {
-
-            return getY();
-        }
-
-        /**
-         * Returns the vertical coordinate of the bottom right of the exit
-         * 
-         * @return the vertical coordinate of the bottom right of the exit
-         */
-        public int getY1()
-        {
-
-            return getY() + getHeight();
-        }
-        /*
-        @Override
-        public Object clone() throws CloneNotSupportedException
-        {
-
-            Exit e = (Exit) super.clone( );
-            e.defaultExitLook = ( defaultExitLook != null ? (ExitLook) defaultExitLook.clone( ) : null );
-            e.documentation = ( documentation != null ? new string(documentation ) : null );
-            e.height = height;
-            if( nextScenes != null ) {
-                e.nextScenes = new List<NextScene>( );
-                for( NextScene ns : nextScenes )
-                    e.nextScenes.add( (NextScene) ns.clone( ) );
-            }
-    e.influenceArea = ( influenceArea != null ? (InfluenceArea) influenceArea.clone( ) : null );
-            e.width = width;
-            e.x = x;
-            e.y = y;
-            e.rectangular = rectangular;
-            if( points != null ) {
-                e.points = new List<Point>( );
-                for( Point p : points )
-                    e.points.add( (Point) p.clone( ) );
-            }
-            e.conditions = ( conditions != null ? (Conditions) conditions.clone( ) : null );
-            e.effects = ( effects != null ? (Effects) effects.clone( ) : null );
-            e.postEffects = ( postEffects != null ? (Effects) postEffects.clone( ) : null );
-            e.notEffects = ( notEffects != null ? (Effects) notEffects.clone( ) : null );
-            e.destinyX = destinyX;
-            e.destinyY = destinyY;
-            e.hasNotEffects = hasNotEffects;
-            e.nextSceneId = ( nextSceneId != null ? new string(nextSceneId ) : null );
-            e.transitionTime = new int(transitionTime );
-    e.transitionType = new int(transitionType );
-            return e;
-        }*/
-
-        public bool isRectangular()
-        {
-
-            return rectangular;
-        }
-
-        public void setRectangular(bool rectangular)
-        {
-
-            this.rectangular = rectangular;
-        }
-
-        public List<Vector2> getPoints()
-        {
-
-            return points;
-        }
-
-        public void addPoint(Vector2 point)
-        {
-
-            points.Add(point);
-        }
-
         public InfluenceArea getInfluenceArea()
         {
 
@@ -674,7 +404,6 @@ namespace uAdventure.Core
 
         public bool hasPlayerPosition()
         {
-
             return (destinyX != int.MinValue) && (destinyY != int.MinValue);
         }
 
@@ -708,7 +437,6 @@ namespace uAdventure.Core
             Exit e = (Exit)this.MemberwiseClone();
             e.defaultExitLook = (defaultExitLook != null ? (ExitLook)defaultExitLook.Clone() : null);
             e.documentation = (documentation != null ? documentation : null);
-            e.height = height;
             if (nextScenes != null)
             {
                 e.nextScenes = new List<NextScene>();
@@ -716,16 +444,6 @@ namespace uAdventure.Core
                     e.nextScenes.Add((NextScene)ns.Clone());
             }
             e.influenceArea = (influenceArea != null ? (InfluenceArea)influenceArea.Clone() : null);
-            e.width = width;
-            e.x = x;
-            e.y = y;
-            e.rectangular = rectangular;
-            if (points != null)
-            {
-                e.points = new List<Vector2>();
-                foreach (Vector2 p in points)
-                    e.points.Add(new Vector2(p.x, p.y));
-            }
             e.conditions = (conditions != null ? (Conditions)conditions.Clone() : null);
             e.effects = (effects != null ? (Effects)effects.Clone() : null);
             e.postEffects = (postEffects != null ? (Effects)postEffects.Clone() : null);

@@ -7,7 +7,7 @@ namespace uAdventure.Editor
 {
     public class DeletePointTool : Tool
     {
-        private Rectangle rectangle;
+        private HasInfluenceArea holder;
 
         private Vector2 oldPoint;
 
@@ -19,20 +19,20 @@ namespace uAdventure.Editor
 
         private InfluenceArea newInfluenceArea;
 
-        public DeletePointTool(Rectangle rectangle, Vector2 point)
+        public DeletePointTool(HasInfluenceArea holder, Vector2 point)
         {
 
-            this.rectangle = rectangle;
+            this.holder = holder;
             this.oldPoint = point;
-            this.oldIndex = rectangle.getPoints().IndexOf(point);
+            this.oldIndex = holder.getInfluenceArea().getPoints().IndexOf(point);
         }
 
-        public DeletePointTool(Rectangle rectangle, Vector2 point, InfluenceAreaDataControl iadc)
+        public DeletePointTool(HasInfluenceArea holder, Vector2 point, InfluenceAreaDataControl iadc)
         {
 
-            this.rectangle = rectangle;
+            this.holder = holder;
             this.oldPoint = point;
-            this.oldIndex = rectangle.getPoints().IndexOf(point);
+            this.oldIndex = holder.getInfluenceArea().getPoints().IndexOf(point);
             this.iadc = iadc;
             oldInfluenceArea = (InfluenceArea)iadc.getContent();
         }
@@ -60,7 +60,7 @@ namespace uAdventure.Editor
 
         public override bool doTool()
         {
-
+            var rectangle = holder.getInfluenceArea();
             if (rectangle.isRectangular())
                 return false;
             if (rectangle.getPoints().Contains(oldPoint))
@@ -89,9 +89,8 @@ namespace uAdventure.Editor
                     newInfluenceArea.setY(-20);
                     newInfluenceArea.setHeight(maxY - minY + 40);
                     newInfluenceArea.setWidth(maxX - minX + 40);
-
-                    ActiveArea aa = (ActiveArea)rectangle;
-                    aa.setInfluenceArea(newInfluenceArea);
+                    
+                    holder.setInfluenceArea(newInfluenceArea);
                     iadc.setInfluenceArea(newInfluenceArea);
                 }
 
@@ -104,13 +103,12 @@ namespace uAdventure.Editor
         public override bool redoTool()
         {
 
-            if (rectangle.getPoints().Contains(oldPoint))
+            if (holder.getInfluenceArea().getPoints().Contains(oldPoint))
             {
-                rectangle.getPoints().Remove(oldPoint);
+                holder.getInfluenceArea().getPoints().Remove(oldPoint);
                 if (iadc != null)
                 {
-                    ActiveArea aa = (ActiveArea)rectangle;
-                    aa.setInfluenceArea(newInfluenceArea);
+                    holder.setInfluenceArea(newInfluenceArea);
                     iadc.setInfluenceArea(newInfluenceArea);
                 }
                 Controller.Instance.reloadPanel();
@@ -123,11 +121,10 @@ namespace uAdventure.Editor
         public override bool undoTool()
         {
 
-            rectangle.getPoints().Insert(oldIndex, oldPoint);
+            holder.getInfluenceArea().getPoints().Insert(oldIndex, oldPoint);
             if (iadc != null)
             {
-                ActiveArea aa = (ActiveArea)rectangle;
-                aa.setInfluenceArea(oldInfluenceArea);
+                holder.setInfluenceArea(oldInfluenceArea);
                 iadc.setInfluenceArea(oldInfluenceArea);
             }
             Controller.Instance.reloadPanel();

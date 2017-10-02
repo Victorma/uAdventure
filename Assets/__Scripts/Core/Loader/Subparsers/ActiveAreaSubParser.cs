@@ -39,11 +39,12 @@ namespace uAdventure.Core
 			    influenceHeight = ExParsers.ParseDefault(element.GetAttribute("influenceHeight"), 0);
 
             ActiveArea activeArea = new ActiveArea((id == null ? generateId() : id), rectangular, x, y, width, height);
+            InfluenceArea influenceArea = new InfluenceArea();
             if (hasInfluence)
             {
-                InfluenceArea influenceArea = new InfluenceArea(influenceX, influenceY, influenceWidth, influenceHeight);
-                activeArea.setInfluenceArea(influenceArea);
+                influenceArea = new InfluenceArea(influenceX, influenceY, influenceWidth, influenceHeight);
             }
+            activeArea.setInfluenceArea(influenceArea);
 
             if (documentation != null)
                 activeArea.setDocumentation(documentation.InnerText);
@@ -54,7 +55,8 @@ namespace uAdventure.Core
             {
                 if (activeArea != null)
                 {
-                    activeArea.addVector2(
+                    activeArea.getInfluenceArea().setRectangular(false);
+                    activeArea.getInfluenceArea().addPoint(
                         new Vector2(ExParsers.ParseDefault(el.GetAttribute("x"), 0),
                                     ExParsers.ParseDefault(el.GetAttribute("y"), 0)));
                 }

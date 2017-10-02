@@ -110,13 +110,14 @@ namespace uAdventure.Core
                 currentExit.setTransitionType(transitionType);
                 currentExit.setHasNotEffects(notEffects);
 
+                InfluenceArea influenceArea = new InfluenceArea();
                 if (hasInfluence)
                 {
-                    InfluenceArea influenceArea = new InfluenceArea(influenceX, influenceY, influenceWidth, influenceHeight);
-                    currentExit.setInfluenceArea(influenceArea);
+                    influenceArea = new InfluenceArea(influenceX, influenceY, influenceWidth, influenceHeight);
                 }
+                currentExit.setInfluenceArea(influenceArea);
 
-				foreach (XmlElement ell in el.SelectNodes("exit-look"))
+                foreach (XmlElement ell in el.SelectNodes("exit-look"))
                 {
                     currentExitLook = new ExitLook();
 					string text = ell.GetAttribute("text");
@@ -137,7 +138,8 @@ namespace uAdventure.Core
 					currentPoint = new Vector2(
 						ExParsers.ParseDefault (ell.GetAttribute("x"), 0), 
 						ExParsers.ParseDefault (ell.GetAttribute("y"), 0));
-                    currentExit.addPoint(currentPoint);
+                    currentExit.getInfluenceArea().addPoint(currentPoint);
+                    currentExit.getInfluenceArea().setRectangular(false);
                 }
 
 				currentExit.setConditions(DOMParserUtility.DOMParse (el.SelectSingleNode("condition"), parameters) 	as Conditions ?? new Conditions());

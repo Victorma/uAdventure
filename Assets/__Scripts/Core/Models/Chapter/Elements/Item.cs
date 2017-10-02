@@ -83,16 +83,6 @@ namespace uAdventure.Core
 
            return sb.tostring();
        }
-
-       @Override
-       public Object clone() throws CloneNotSupportedException
-       {
-
-           Item i = (Item) super.clone( );
-           i.setBehaviour( this.behaviour );
-           i.setResourcesTransitionTime( this.resourcesTransitionTime );
-           return i;
-       }
        */
         public override object Clone()
         {
